@@ -29,6 +29,37 @@ The development package allows you to configure :
 - In each folder you will find a specific README.md file with recipes/examples.
 
 
+To create a new component to work with current primo-ui
+
+(function(){
+     angular.module('viewCustom')
+        .controller('customYourCtrl',['$scope',function ($scope) {
+            let vm=this;
+            vm.$onit=()=>{
+               // write your code here
+
+               console.log(vm);
+
+               $scope.$watch('vm.parentCtrl',()=>{
+                    console.log(vm.parentCtrl);
+               });
+            }
+
+
+
+        }]);
+
+        angular.module('viewCustom')
+        .component('customYourComponentName',{
+            bindings:{parentCtrl:'<'},
+            controller: 'customYourCtrl',
+            controllerAs:'vm',
+            templateUrl:'/primo-explore/custom/01HVD_IMAGES/html/custom-yourfilename.html'
+        });
+
+)}();
+
+
 
 
 
