@@ -2215,12 +2215,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 console.log(error);
             });
         };
-        // check if a user login
-        vm.$onChanges = function () {
-            // This flag is return true or false
-            var loginID = vm.parentCtrl.isLoggedIn;
-            sv.setLogInID(loginID);
-            sv.setAuth(vm.parentCtrl);
+
+        vm.$onInit = function () {
             vm.api = sv.getApi();
             if (!vm.api.ipUrl) {
                 vm.getUrl();
@@ -2228,6 +2224,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // get client ip address to see if a user is internal or external user
                 vm.getClientIP();
             }
+        };
+
+        // check if a user login
+        vm.$onChanges = function () {
+            // This flag is return true or false
+            var loginID = vm.parentCtrl.isLoggedIn;
+            sv.setLogInID(loginID);
+            sv.setAuth(vm.parentCtrl);
         };
     }]);
 
