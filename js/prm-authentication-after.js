@@ -55,22 +55,24 @@
                 )
         };
 
-        vm.$onInit=()=>{
-            vm.api = sv.getApi();
-            if(!vm.api.ipUrl) {
-                vm.getUrl();
-            } else {
-                // get client ip address to see if a user is internal or external user
-                vm.getClientIP();
-            }
-        };
 
         // check if a user login
-        vm.$onChanges=function(){
+        vm.$onInit=()=>{
             // This flag is return true or false
             let loginID=vm.parentCtrl.isLoggedIn;
             sv.setLogInID(loginID);
             sv.setAuth(vm.parentCtrl);
+
+            setTimeout(()=>{
+                vm.api = sv.getApi();
+                if(!vm.api.ipUrl) {
+                    vm.getUrl();
+                } else {
+                    // get client ip address to see if a user is internal or external user
+                    vm.getClientIP();
+                }
+
+            },50);
 
         };
 

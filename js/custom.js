@@ -470,6 +470,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 })();
 
 /**
+ * Created by samsan on 3/26/18.
+ * This header will use for image component page and image detail page
+ */
+
+(function () {
+
+    angular.module('viewCustom').controller('customHeaderCtrl', [function () {
+        var vm = this;
+    }]);
+
+    angular.module('viewCustom').component('customHeader', {
+        bindings: { parentCtrl: '<' },
+        controller: 'customHeaderCtrl',
+        controllerAs: 'vm',
+        templateUrl: '/primo-explore/custom/01HVD_IMAGES/html/custom-header.html'
+    });
+})();
+
+/**
  * Created by samsan on 3/20/18.
  * It use for intercept http request so it would change the search default limit to 50
  */
@@ -1580,31 +1599,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         vm.$onInit = function () {
-            // hide search box
-            var el = $element[0].parentNode.parentNode.children[0].children[2];
-            if (el) {
-                el.style.display = 'none';
-            }
 
-            // insert a header into black topbar
-            $timeout(function (e) {
-                var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
-                if (topbar) {
-                    // hide title in extra small screen size
-                    if (!$mdMedia('xs')) {
-                        var divNode = document.createElement('div');
-                        divNode.setAttribute('class', 'metadataHeader');
-                        var textNode = document.createTextNode('FULL COMPONENT METADATA');
-                        divNode.appendChild(textNode);
-                        topbar.insertBefore(divNode, topbar.children[2]);
-                    }
-                    // remove pin and bookmark
-                    if (topbar.children.length > 2) {
-                        topbar.children[1].remove();
-                        topbar.children[2].remove();
-                    }
+            // initialize banner title so it would display next to logo
+            vm.parentCtrl.bannerTitle = 'FULL COMPONENT METADATA';
+
+            setTimeout(function () {
+                // hide search bar
+                var searchBar = document.getElementsByTagName('prm-search-bar')[0];
+                if (searchBar) {
+                    searchBar.style.display = 'none';
                 }
-            }, 1000);
+
+                // hide top black bar
+                var topBar = document.getElementsByTagName('prm-topbar')[0];
+                if (topBar) {
+                    topBar.style.display = 'none';
+                }
+            }, 5);
 
             vm.getData();
         };
@@ -1801,28 +1812,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
             // call ajax and display data
             vm.getData();
-            // hide search bar
-            var el = $element[0].parentNode.parentNode.children[0].children[2];
-            if (el) {
-                el.style.display = 'none';
-            }
 
-            // insert a header into black topbar
-            $timeout(function (e) {
-                var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
-                if (topbar) {
-                    var divNode = document.createElement('div');
-                    divNode.setAttribute('class', 'metadataHeader');
-                    var textNode = document.createTextNode('FULL IMAGE DETAIL');
-                    divNode.appendChild(textNode);
-                    topbar.insertBefore(divNode, topbar.children[2]);
-                    // remove pin and bookmark
-                    if (topbar.children.length > 2) {
-                        topbar.children[1].remove();
-                        topbar.children[2].remove();
-                    }
+            // initialize label for image component page
+            vm.parentCtrl.bannerTitle = 'FULL IMAGE DETAIL';
+            setTimeout(function () {
+                // hide search bar
+                var searchBar = document.getElementsByTagName('prm-search-bar')[0];
+                if (searchBar) {
+                    searchBar.style.display = 'none';
                 }
-            }, 1000);
+
+                // hide top black bar
+                var topBar = document.getElementsByTagName('prm-topbar')[0];
+                if (topBar) {
+                    topBar.style.display = 'none';
+                }
+            }, 5);
         };
 
         // next photo
@@ -2216,22 +2221,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             });
         };
 
-        vm.$onInit = function () {
-            vm.api = sv.getApi();
-            if (!vm.api.ipUrl) {
-                vm.getUrl();
-            } else {
-                // get client ip address to see if a user is internal or external user
-                vm.getClientIP();
-            }
-        };
-
         // check if a user login
-        vm.$onChanges = function () {
+        vm.$onInit = function () {
             // This flag is return true or false
             var loginID = vm.parentCtrl.isLoggedIn;
             sv.setLogInID(loginID);
             sv.setAuth(vm.parentCtrl);
+
+            setTimeout(function () {
+                vm.api = sv.getApi();
+                if (!vm.api.ipUrl) {
+                    vm.getUrl();
+                } else {
+                    // get client ip address to see if a user is internal or external user
+                    vm.getClientIP();
+                }
+            }, 50);
         };
     }]);
 
@@ -3164,7 +3169,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 (function () {
 
-    angular.module('viewCustom').controller('prmTopbarAfterController', ['$element', 'prmSearchService', function ($element, prmSearchService) {
+    angular.module('viewCustom').controller('prmTopbarAfterController', ['$element', 'prmSearchService', '$scope', '$compile', function ($element, prmSearchService, $scope, $compile) {
 
         var vm = this;
         var cs = prmSearchService;
@@ -3184,12 +3189,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // hide primo tab menu
             vm.parentCtrl.showMainMenu = false;
             // create new div for the top white menu
-            var el = $element[0].parentNode.parentNode.parentNode.parentNode.parentNode;
+            var primoExplore = document.getElementsByTagName('primo-explore')[0];
             var div = document.createElement('div');
             div.setAttribute('id', 'customTopMenu');
             div.setAttribute('class', 'topMenu');
-            if (el.children[0].className !== 'topMenu') {
-                el.prepend(div);
+            // create custom top white bar
+            var customTop = document.createElement('custom-top-menu');
+            div.appendChild(customTop);
+            if (primoExplore.children[0].className !== 'topMenu') {
+                $compile(div)($scope);
+                primoExplore.prepend(div);
             }
 
             vm.getUrl();

@@ -122,21 +122,6 @@ a.noline:hover {
     margin-bottom:15px;
 }
 
-.topMenu {
-    background:#ffffff;
-    height: 50px;
-    width:100%;
-}
-
-.customTopMenu {
-    position: absolute;
-    top:-50px;
-    left:0px;
-    width:100%;
-    height:50px;
-    color:#000000 !important;
-    z-index: 1000;
-}
 
 .hv-menu {
     margin-right:15px;

@@ -5,7 +5,7 @@
 (function () {
 
     angular.module('viewCustom')
-    .controller('prmTopbarAfterController', ['$element','prmSearchService', function ($element,prmSearchService) {
+    .controller('prmTopbarAfterController', ['$element','prmSearchService','$scope','$compile', function ($element,prmSearchService, $scope, $compile) {
 
         let vm = this;
         let cs = prmSearchService;
@@ -29,12 +29,16 @@
             // hide primo tab menu
             vm.parentCtrl.showMainMenu=false;
             // create new div for the top white menu
-            var el=$element[0].parentNode.parentNode.parentNode.parentNode.parentNode;
-            var div=document.createElement('div');
+            let primoExplore = document.getElementsByTagName('primo-explore')[0];
+            let div=document.createElement('div');
             div.setAttribute('id','customTopMenu');
             div.setAttribute('class','topMenu');
-            if(el.children[0].className !== 'topMenu') {
-                el.prepend(div);
+            // create custom top white bar
+            let customTop = document.createElement('custom-top-menu');
+            div.appendChild(customTop);
+            if(primoExplore.children[0].className !== 'topMenu') {
+                $compile(div)($scope);
+                primoExplore.prepend(div);
             }
 
             vm.getUrl();

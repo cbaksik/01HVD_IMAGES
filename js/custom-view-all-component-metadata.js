@@ -112,32 +112,24 @@
         };
 
         vm.$onInit=function() {
-            // hide search box
-            var el=$element[0].parentNode.parentNode.children[0].children[2];
-            if(el) {
-                el.style.display = 'none';
-            }
 
-            // insert a header into black topbar
-            $timeout(function (e) {
-                var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
-                if(topbar) {
-                    // hide title in extra small screen size
-                    if(!$mdMedia('xs')) {
-                        var divNode = document.createElement('div');
-                        divNode.setAttribute('class', 'metadataHeader');
-                        var textNode = document.createTextNode('FULL COMPONENT METADATA');
-                        divNode.appendChild(textNode);
-                        topbar.insertBefore(divNode, topbar.children[2]);
-                    }
-                    // remove pin and bookmark
-                    if(topbar.children.length > 2) {
-                        topbar.children[1].remove();
-                        topbar.children[2].remove();
-                    }
+            // initialize banner title so it would display next to logo
+            vm.parentCtrl.bannerTitle='FULL COMPONENT METADATA';
 
+            setTimeout(()=>{
+                // hide search bar
+                let searchBar=document.getElementsByTagName('prm-search-bar')[0];
+                if(searchBar) {
+                    searchBar.style.display = 'none';
                 }
-            },1000);
+
+                // hide top black bar
+                let topBar = document.getElementsByTagName('prm-topbar')[0];
+                if(topBar) {
+                    topBar.style.display='none';
+                }
+
+            },5);
 
             vm.getData();
         };
