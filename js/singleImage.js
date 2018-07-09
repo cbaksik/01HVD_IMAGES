@@ -4,10 +4,7 @@
  * It use to show a single image on the page. If the image does not exist, it use icon_image.png
  */
 
-(function () {
-
-
-    angular.module('viewCustom')
+angular.module('viewCustom')
     .component('singleImage', {
         templateUrl:'/primo-explore/custom/01HVD_IMAGES/html/singleImage.html',
         bindings: {
@@ -39,7 +36,8 @@
                 vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
                 if(vm.src && vm.showImage) {
                     if(vm.jp2===true) {
-                        var url = sv.getHttps(vm.src) + '?buttons=Y';
+                        //var url = sv.getHttps(vm.src) + '?buttons=Y';
+                        var url = sv.getHttps(vm.src);
                         vm.imageUrl = $sce.trustAsResourceUrl(url);
                     } else {
                         vm.imageUrl=vm.src;
@@ -95,5 +93,3 @@
 
         }]
     });
-
-})();
