@@ -656,6 +656,10 @@ prm-search-result-list-after{
 #homePageAlert a {
     color: #750000;
 }
+.prm-full-view-dialog {
+    color:#000000 !important;
+    z-index:1000 !important;
+}
 #header {
 
 }
@@ -1279,9 +1283,6 @@ prm-search-result-availability-line {
   height: auto;
 }
 
-
-
-
 .nobadge {color: #000000; padding:2px;
   display:inline-block; z-index:1; }
 
@@ -1290,8 +1291,6 @@ prm-search-result-availability-line {
   text-align: right;
   display: inline-block;
 }
-
-
 
 
 .row > .column {

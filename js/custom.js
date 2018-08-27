@@ -493,10 +493,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         // local variables
         var vm = this;
         var sv = prmSearchService;
-        vm.item = {};
         vm.item = items.item;
         vm.searchData = items.searchData;
-
         sv.setItem(items);
         vm.closeDialog = function () {
             $mdDialog.hide();
@@ -3431,94 +3429,93 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  * It use to show a single image on the page. If the image does not exist, it use icon_image.png
  */
 
-(function () {
+angular.module('viewCustom').component('singleImage', {
+    templateUrl: '/primo-explore/custom/01HVD_IMAGES/html/singleImage.html',
+    bindings: {
+        src: '<',
+        imgtitle: '<',
+        restricted: '<',
+        jp2: '<'
+    },
+    controllerAs: 'vm',
+    controller: ['$element', '$window', '$location', 'prmSearchService', '$timeout', '$sce', function ($element, $window, $location, prmSearchService, $timeout, $sce) {
+        var vm = this;
+        var sv = prmSearchService;
+        // set up local scope variables
+        vm.imageUrl = '';
+        vm.showImage = true;
+        vm.params = $location.search();
+        vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
+        vm.isLoggedIn = sv.getLogInID();
+        vm.clientIp = sv.getClientIp();
 
-    angular.module('viewCustom').component('singleImage', {
-        templateUrl: '/primo-explore/custom/01HVD_IMAGES/html/singleImage.html',
-        bindings: {
-            src: '<',
-            imgtitle: '<',
-            restricted: '<',
-            jp2: '<'
-        },
-        controllerAs: 'vm',
-        controller: ['$element', '$window', '$location', 'prmSearchService', '$timeout', '$sce', function ($element, $window, $location, prmSearchService, $timeout, $sce) {
-            var vm = this;
-            var sv = prmSearchService;
-            // set up local scope variables
-            vm.imageUrl = '';
-            vm.showImage = true;
-            vm.params = $location.search();
-            vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
-            vm.isLoggedIn = sv.getLogInID();
+        // check if image is not empty and it has width and height and greater than 150, then add css class
+        vm.$onChanges = function () {
             vm.clientIp = sv.getClientIp();
+            vm.isLoggedIn = sv.getLogInID();
 
-            // check if image is not empty and it has width and height and greater than 150, then add css class
-            vm.$onChanges = function () {
-                vm.clientIp = sv.getClientIp();
-                vm.isLoggedIn = sv.getLogInID();
-
-                if (vm.restricted && !vm.isLoggedIn && !vm.clientIp.status) {
-                    vm.showImage = false;
-                }
-                vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
-                if (vm.src && vm.showImage) {
-                    if (vm.jp2 === true) {
-                        var url = sv.getHttps(vm.src) + '?buttons=Y';
-                        vm.imageUrl = $sce.trustAsResourceUrl(url);
-                    } else {
-                        vm.imageUrl = vm.src;
-                        $timeout(function () {
-                            var img = $element.find('img')[0];
-                            // use default image if it is a broken link image
-                            var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                            if (pattern.test(vm.src)) {
-                                img.src = '/primo-explore/custom/01HVD_IMAGES/img/icon_image.png';
-                            }
-                            img.onload = vm.callback;
-                            if (img.width > 600) {
-                                vm.callback();
-                            }
-                        }, 300);
-                    }
+            if (vm.restricted && !vm.isLoggedIn && !vm.clientIp.status) {
+                vm.showImage = false;
+            }
+            vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
+            if (vm.src && vm.showImage) {
+                if (vm.jp2 === true) {
+                    var url = sv.getHttps(vm.src) + '?buttons=Y';
+                    //var url = sv.getHttps(vm.src);
+                    vm.imageUrl = $sce.trustAsResourceUrl(url);
                 } else {
-                    vm.imageUrl = '';
+                    vm.imageUrl = vm.src;
+                    $timeout(function () {
+                        var img = $element.find('img')[0];
+                        // use default image if it is a broken link image
+                        var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                        if (pattern.test(vm.src)) {
+                            img.src = '/primo-explore/custom/01HVD_IMAGES/img/icon_image.png';
+                        }
+                        img.onload = vm.callback;
+                        if (img.width > 600) {
+                            vm.callback();
+                        }
+                    }, 300);
                 }
+            } else {
+                vm.imageUrl = '';
+            }
 
-                vm.localScope.loading = false;
-            };
+            vm.localScope.loading = false;
+        };
 
-            vm.callback = function () {
-                var image = $element.find('img')[0];
-                // resize the image if it is larger than 600 pixel
-                if (image.width > 600) {
-                    vm.localScope.imgClass = 'responsiveImage';
-                    image.className = 'md-card-image ' + vm.localScope.imgClass;
-                }
+        vm.callback = function () {
+            var image = $element.find('img')[0];
+            // resize the image if it is larger than 600 pixel
+            if (image.width > 600) {
+                vm.localScope.imgClass = 'responsiveImage';
+                image.className = 'md-card-image ' + vm.localScope.imgClass;
+            }
 
-                // force to show lock icon
-                if (vm.restricted) {
-                    vm.localScope.hideLockIcon = true;
-                }
-            };
+            // force to show lock icon
+            if (vm.restricted) {
+                vm.localScope.hideLockIcon = true;
+            }
+        };
 
-            // login
-            vm.signIn = function () {
-                var auth = sv.getAuth();
-                var params = { 'vid': '', 'targetURL': '' };
-                params.vid = vm.params.vid;
-                params.targetURL = $window.location.href;
-                var url = '/primo-explore/login?from-new-ui=1&authenticationProfile=' + auth.authenticationMethods[0].profileName + '&search_scope=default_scope&tab=default_tab';
-                url += '&Institute=' + auth.authenticationService.userSessionManagerService.userInstitution + '&vid=' + params.vid;
-                if (vm.params.offset) {
-                    url += '&offset=' + vm.params.offset;
-                }
-                url += '&targetURL=' + encodeURIComponent(params.targetURL);
-                $window.location.href = url;
-            };
-        }]
-    });
-})();
+        // login
+        vm.signIn = function () {
+            var auth = sv.getAuth();
+            var params = { 'vid': '', 'targetURL': '' };
+            params.vid = vm.params.vid;
+            params.targetURL = $window.location.href;
+            var url = '/primo-explore/login?from-new-ui=1&authenticationProfile=' + auth.authenticationMethods[0].profileName + '&search_scope=default_scope&tab=default_tab';
+            url += '&Institute=' + auth.authenticationService.userSessionManagerService.userInstitution + '&vid=' + params.vid;
+            if (vm.params.offset) {
+                url += '&offset=' + vm.params.offset;
+            }
+            url += '&targetURL=' + encodeURIComponent(params.targetURL);
+            $window.location.href = url;
+        };
+    }]
+});
+
 /**
  * Created by samsan on 5/23/17.
  * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
@@ -3533,7 +3530,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             searchdata: '<'
         },
         controllerAs: 'vm',
-        controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location) {
+        controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', '$state', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location, $state) {
             var vm = this;
             var sv = prmSearchService;
             vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'showImageLabel': false };
@@ -3582,7 +3579,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     vid = vm.params.vid;
                 }
 
-                vm.linkUrl = '/primo-explore/fulldisplay?vid=' + vid + '&docid=' + vm.dataitem.pnx.control.recordid[0] + '&sortby=' + sort;
+                vm.linkUrl = '/fulldisplay?vid=' + vid + '&docid=' + vm.dataitem.pnx.control.recordid[0] + '&sortby=' + sort;
                 vm.linkUrl += '&q=' + q + '&searchString=' + searchString + '&offset=' + offset;
                 vm.linkUrl += '&tab=' + tab + '&search_scope=' + scope;
                 if (vm.params.facet) {
@@ -3598,7 +3595,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // context menu
                 var context = $element.find('a');
                 context.bind('contextmenu', function (e) {
-
                     //e.preventDefault();
                     return false;
                 });
@@ -3647,12 +3643,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 $window.open(url, '_blank');
             };
 
+            // go to full display state
+            vm.goto = function ($event) {
+                var obj = { docid: vm.dataitem.pnx.control.recordid[0], vid: '01HVD_IMAGES', lang: 'en_US', search_scope: vm.params.search_scope, tab: vm.params.tab, q: vm.searchdata.q, searchString: vm.searchdata.searchString, sortby: vm.params.sortby, offset: vm.params.offset };
+                $state.go('fulldisplay', obj, { location: false, reload: true, notify: false });
+            };
+
+            // display the page over layer
+            vm.popup = function ($event) {
+                vm.goto($event);
+                $timeout(function () {
+                    vm.openDialog($event);
+                }, 1000);
+            };
+
             // open modal dialog when click on thumbnail image
             vm.openDialog = function ($event) {
                 // set data to build full display page
-                var itemData = { 'item': '', 'searchData': '' };
+                var itemData = { 'item': '', 'searchData': '', 'ctrl': '' };
                 itemData.item = vm.dataitem;
                 itemData.searchData = vm.searchdata;
+                itemData.ctrl = vm.ctrl;
                 sv.setItem(itemData);
                 // modal dialog pop up here
                 $mdDialog.show({
