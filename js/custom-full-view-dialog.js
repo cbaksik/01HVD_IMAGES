@@ -7,15 +7,14 @@
 (function () {
 
     angular.module('viewCustom')
-    .controller('customFullViewDialogController', ['items','$mdDialog','prmSearchService', function (items, $mdDialog, prmSearchService) {
+    .controller('customFullViewDialogController', ['$mdDialog','items', function ($mdDialog, items) {
         // local variables
         let vm = this;
-        let sv=prmSearchService;
         vm.item = items.item;
         vm.searchData = items.searchData;
-        sv.setItem(items);
+
         vm.closeDialog=function() {
-            $mdDialog.hide();
+            $mdDialog.hide(scope);
         };
 
     }]);

@@ -5,19 +5,22 @@
 (function () {
 
     angular.module('viewCustom')
-    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$timeout','$mdDialog','$element','$mdMedia', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog,$element, $mdMedia) {
+    .controller('prmSearchResultListAfterController', ['prmSearchService','$mdDialog','$element','$mdMedia','$state','$timeout', function (prmSearchService, $mdDialog,$element, $mdMedia, $state, $timeout) {
 
         // call custom service from the injection
         let sv=prmSearchService;
         this.searchInfo = sv.getPage(); // get page info object
 
         let vm = this;
+        let ev='';
+        let dialog='';
         vm.searchInProgress=true;
         vm.modalDialogFlag=false;
         vm.currentPage=1;
         vm.flag=false;
         vm.searchData={};
         vm.paginationNumber=6;
+        vm.index=0;
         vm.flexSize={'size1':20,'size2':80,'class':'spaceLeft15'};
         // set search result set per page, default 50 items per page
 
@@ -202,8 +205,89 @@
 
         this.closeDialog=function () {
             sv.setDialogFlag(false);
+            vm.modalDialogFlag=false;
             $mdDialog.hide();
         };
+
+        // for click
+        vm.popup=(e,index)=>{
+            ev=e;
+            vm.modalDialogFlag=true;
+            vm.index=index;
+            let dataitem=vm.items[vm.index];
+            vm.itemData={'item':'','searchData':''};
+            vm.itemData.item=dataitem;
+            vm.itemData.searchData=vm.searchData;
+            sv.setItem(vm.itemData);
+            vm.goto();
+            $timeout(function () {
+                vm.openDialog();
+
+            },500);
+        };
+
+        // for keypress
+        vm.popup2=(e,index)=>{
+            if(e.which===13) {
+                vm.popup(e,index);
+            }
+        };
+
+        // go to full display state
+        vm.goto=function() {
+            var obj={docid:vm.itemData.item.pnx.control.recordid[0],vid:'01HVD_IMAGES',lang:'en_US',search_scope:vm.searchData.scope,tab:vm.searchData.tab,q:vm.searchData.q,searchString:vm.searchData.searchString,sortby:vm.searchData.sortby,offset:vm.searchData.offset};
+            $state.go('fulldisplay',obj,{location:false, reload:true,notify:false});
+
+        };
+
+        // open modal dialog when click on thumbnail image
+        vm.openDialog=function () {
+           dialog = $mdDialog.show({
+                title:'Full View Details',
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                focusOnOpen:true,
+                escapeToClose: true,
+                bindToController:true,
+                templateUrl:'/primo-explore/custom/01HVD_IMAGES/html/custom-full-view-dialog.html',
+                controller:'customFullViewDialogController',
+                controllerAs:'vm',
+                fullscreen:true,
+                multiple:true,
+                openFrom:{left:0},
+                locals: {
+                    items:vm.itemData
+                },
+                onComplete:function (scope, element) {
+                    sv.setDialogFlag(true);
+
+                },
+                onRemoving:function (element,removePromise) {
+                    sv.setDialogFlag(false);
+                }
+            });
+
+            return false;
+        };
+
+
+        this.getPreviousRecord=function() {
+            if(vm.index >0 && vm.index < vm.items.length) {
+                vm.index--;
+                vm.popup(ev,vm.index);
+            }
+        };
+
+
+        this.getNextRecord=function() {
+            if(!dialog.$$state.status) {
+                if (vm.index >= 0 && vm.index < (vm.items.length - 1)) {
+                    vm.index++;
+                    vm.popup(ev,vm.index);
+
+                }
+            }
+        }
 
 
     }]);

@@ -489,15 +489,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 (function () {
 
-    angular.module('viewCustom').controller('customFullViewDialogController', ['items', '$mdDialog', 'prmSearchService', function (items, $mdDialog, prmSearchService) {
+    angular.module('viewCustom').controller('customFullViewDialogController', ['$mdDialog', 'items', function ($mdDialog, items) {
         // local variables
         var vm = this;
-        var sv = prmSearchService;
         vm.item = items.item;
         vm.searchData = items.searchData;
-        sv.setItem(items);
+
         vm.closeDialog = function () {
-            $mdDialog.hide();
+            $mdDialog.hide(scope);
         };
     }]);
 })();
@@ -2696,19 +2695,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 (function () {
 
-    angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$window', '$timeout', '$mdDialog', '$element', '$mdMedia', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog, $element, $mdMedia) {
+    angular.module('viewCustom').controller('prmSearchResultListAfterController', ['prmSearchService', '$mdDialog', '$element', '$mdMedia', '$state', '$timeout', function (prmSearchService, $mdDialog, $element, $mdMedia, $state, $timeout) {
 
         // call custom service from the injection
         var sv = prmSearchService;
         this.searchInfo = sv.getPage(); // get page info object
 
         var vm = this;
+        var ev = '';
+        var dialog = '';
         vm.searchInProgress = true;
         vm.modalDialogFlag = false;
         vm.currentPage = 1;
         vm.flag = false;
         vm.searchData = {};
         vm.paginationNumber = 6;
+        vm.index = 0;
         vm.flexSize = { 'size1': 20, 'size2': 80, 'class': 'spaceLeft15' };
         // set search result set per page, default 50 items per page
 
@@ -2885,7 +2887,82 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         this.closeDialog = function () {
             sv.setDialogFlag(false);
+            vm.modalDialogFlag = false;
             $mdDialog.hide();
+        };
+
+        // for click
+        vm.popup = function (e, index) {
+            ev = e;
+            vm.modalDialogFlag = true;
+            vm.index = index;
+            var dataitem = vm.items[vm.index];
+            vm.itemData = { 'item': '', 'searchData': '' };
+            vm.itemData.item = dataitem;
+            vm.itemData.searchData = vm.searchData;
+            sv.setItem(vm.itemData);
+            vm.goto();
+            $timeout(function () {
+                vm.openDialog();
+            }, 500);
+        };
+
+        // for keypress
+        vm.popup2 = function (e, index) {
+            if (e.which === 13) {
+                vm.popup(e, index);
+            }
+        };
+
+        // go to full display state
+        vm.goto = function () {
+            var obj = { docid: vm.itemData.item.pnx.control.recordid[0], vid: '01HVD_IMAGES', lang: 'en_US', search_scope: vm.searchData.scope, tab: vm.searchData.tab, q: vm.searchData.q, searchString: vm.searchData.searchString, sortby: vm.searchData.sortby, offset: vm.searchData.offset };
+            $state.go('fulldisplay', obj, { location: false, reload: true, notify: false });
+        };
+
+        // open modal dialog when click on thumbnail image
+        vm.openDialog = function () {
+            dialog = $mdDialog.show({
+                title: 'Full View Details',
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                focusOnOpen: true,
+                escapeToClose: true,
+                bindToController: true,
+                templateUrl: '/primo-explore/custom/01HVD_IMAGES/html/custom-full-view-dialog.html',
+                controller: 'customFullViewDialogController',
+                controllerAs: 'vm',
+                fullscreen: true,
+                multiple: true,
+                openFrom: { left: 0 },
+                locals: {
+                    items: vm.itemData
+                },
+                onComplete: function onComplete(scope, element) {
+                    sv.setDialogFlag(true);
+                },
+                onRemoving: function onRemoving(element, removePromise) {
+                    sv.setDialogFlag(false);
+                }
+            });
+
+            return false;
+        };
+
+        this.getPreviousRecord = function () {
+            if (vm.index > 0 && vm.index < vm.items.length) {
+                vm.index--;
+                vm.popup(ev, vm.index);
+            }
+        };
+
+        this.getNextRecord = function () {
+            if (!dialog.$$state.status) {
+                if (vm.index >= 0 && vm.index < vm.items.length - 1) {
+                    vm.index++;
+                    vm.popup(ev, vm.index);
+                }
+            }
         };
     }]);
 
@@ -3579,7 +3656,7 @@ angular.module('viewCustom').component('singleImage', {
                     vid = vm.params.vid;
                 }
 
-                vm.linkUrl = '/fulldisplay?vid=' + vid + '&docid=' + vm.dataitem.pnx.control.recordid[0] + '&sortby=' + sort;
+                vm.linkUrl = '/primo-explore/fulldisplay?vid=' + vid + '&docid=' + vm.dataitem.pnx.control.recordid[0] + '&sortby=' + sort;
                 vm.linkUrl += '&q=' + q + '&searchString=' + searchString + '&offset=' + offset;
                 vm.linkUrl += '&tab=' + tab + '&search_scope=' + scope;
                 if (vm.params.facet) {
@@ -3641,63 +3718,6 @@ angular.module('viewCustom').component('singleImage', {
             vm.openWindow = function () {
                 var url = '/primo-explore/fulldisplay?vid=01HVD_IMAGES&docid=' + vm.dataitem.pnx.control.recordid[0];
                 $window.open(url, '_blank');
-            };
-
-            // go to full display state
-            vm.goto = function ($event) {
-                var obj = { docid: vm.dataitem.pnx.control.recordid[0], vid: '01HVD_IMAGES', lang: 'en_US', search_scope: vm.params.search_scope, tab: vm.params.tab, q: vm.searchdata.q, searchString: vm.searchdata.searchString, sortby: vm.params.sortby, offset: vm.params.offset };
-                $state.go('fulldisplay', obj, { location: false, reload: true, notify: false });
-            };
-
-            // display the page over layer
-            vm.popup = function ($event) {
-                vm.goto($event);
-                $timeout(function () {
-                    vm.openDialog($event);
-                }, 1000);
-            };
-
-            // open modal dialog when click on thumbnail image
-            vm.openDialog = function ($event) {
-                // set data to build full display page
-                var itemData = { 'item': '', 'searchData': '', 'ctrl': '' };
-                itemData.item = vm.dataitem;
-                itemData.searchData = vm.searchdata;
-                itemData.ctrl = vm.ctrl;
-                sv.setItem(itemData);
-                // modal dialog pop up here
-                $mdDialog.show({
-                    title: 'Full View Details',
-                    target: $event,
-                    clickOutsideToClose: true,
-                    focusOnOpen: true,
-                    escapeToClose: true,
-                    bindToController: true,
-                    templateUrl: '/primo-explore/custom/01HVD_IMAGES/html/custom-full-view-dialog.html',
-                    controller: 'customFullViewDialogController',
-                    controllerAs: 'vm',
-                    fullscreen: true,
-                    multiple: false,
-                    openFrom: { left: 0 },
-                    locals: {
-                        items: itemData
-                    },
-                    onComplete: function onComplete(scope, element) {
-                        sv.setDialogFlag(true);
-                    },
-                    onRemoving: function onRemoving(element, removePromise) {
-                        sv.setDialogFlag(false);
-                    }
-                });
-
-                return false;
-            };
-
-            // When a user press enter by using tab key
-            vm.openDialog2 = function (e) {
-                if (e.which === 13 || e.which === 1) {
-                    vm.openDialog(e);
-                }
             };
         }]
     });

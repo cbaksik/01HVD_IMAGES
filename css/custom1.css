@@ -660,6 +660,7 @@ prm-search-result-list-after{
     color:#000000 !important;
     z-index:1000 !important;
 }
+
 #header {
 
 }
@@ -1416,6 +1417,30 @@ cl-paging > button.md-icon-button {
 .horizontal-line {border-bottom:1px solid #c3c3c3; height:1px; width:auto;}
 
 
+
+.prevButton {
+  display: block;
+  position: fixed;
+  left:30px;
+  top:35%;
+  cursor: pointer;
+  z-index: 100000000;
+  color: #ffffff;
+  width: 96px !important;
+  height: 96px !important;
+}
+
+.nextButton {
+  display: block;
+  position: fixed;
+  left:30px;
+  top:65%;
+  cursor: pointer;
+  z-index: 100000000;
+  color: #ffffff;
+  width: 96px !important;
+  height: 96px !important;
+}
 
 .closeButton {
   display: block;

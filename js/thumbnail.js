@@ -13,7 +13,7 @@
             searchdata:'<'
         },
         controllerAs:'vm',
-        controller:['$element','$timeout','$window','$mdDialog','prmSearchService','$location','$state',function ($element,$timeout,$window,$mdDialog,prmSearchService,$location, $state) {
+        controller:['$element','$timeout','$window','prmSearchService','$location',function ($element,$timeout,$window,prmSearchService,$location) {
             var vm=this;
             var sv=prmSearchService;
             vm.localScope={'imgclass':'','hideLockIcon':false,'showImageLabel':false};
@@ -64,7 +64,7 @@
                     vid=vm.params.vid;
                 }
                 
-                vm.linkUrl='/fulldisplay?vid='+vid+'&docid='+vm.dataitem.pnx.control.recordid[0]+'&sortby='+sort;
+                vm.linkUrl='/primo-explore/fulldisplay?vid='+vid+'&docid='+vm.dataitem.pnx.control.recordid[0]+'&sortby='+sort;
                 vm.linkUrl+='&q='+q+'&searchString='+searchString+'&offset='+offset;
                 vm.linkUrl+='&tab='+tab+'&search_scope='+scope;
                 if(vm.params.facet) {
@@ -130,66 +130,6 @@
             vm.openWindow=function () {
                 var url='/primo-explore/fulldisplay?vid=01HVD_IMAGES&docid='+vm.dataitem.pnx.control.recordid[0];
                 $window.open(url,'_blank');
-            };
-
-            // go to full display state
-            vm.goto=function($event) {
-                var obj={docid:vm.dataitem.pnx.control.recordid[0],vid:'01HVD_IMAGES',lang:'en_US',search_scope:vm.params.search_scope,tab:vm.params.tab,q:vm.searchdata.q,searchString:vm.searchdata.searchString,sortby:vm.params.sortby,offset:vm.params.offset};
-                $state.go('fulldisplay',obj,{location:false, reload:true,notify:false});
-
-            };
-
-            // display the page over layer
-            vm.popup=function ($event) {
-                vm.goto($event);
-                $timeout(function () {
-                    vm.openDialog($event);
-                },1000);
-            };
-
-            // open modal dialog when click on thumbnail image
-            vm.openDialog=function ($event) {
-                // set data to build full display page
-                var itemData={'item':'','searchData':'','ctrl':''};
-                itemData.item=vm.dataitem;
-                itemData.searchData=vm.searchdata;
-                itemData.ctrl=vm.ctrl;
-                sv.setItem(itemData);
-                // modal dialog pop up here
-                $mdDialog.show({
-                    title:'Full View Details',
-                    target:$event,
-                    clickOutsideToClose: true,
-                    focusOnOpen:true,
-                    escapeToClose: true,
-                    bindToController:true,
-                    templateUrl:'/primo-explore/custom/01HVD_IMAGES/html/custom-full-view-dialog.html',
-                    controller:'customFullViewDialogController',
-                    controllerAs:'vm',
-                    fullscreen:true,
-                    multiple:false,
-                    openFrom:{left:0},
-                    locals: {
-                        items:itemData
-                    },
-                    onComplete:function (scope, element) {
-                       sv.setDialogFlag(true);
-
-                    },
-                    onRemoving:function (element,removePromise) {
-                        sv.setDialogFlag(false);
-                    }
-                });
-
-                return false;
-            };
-
-            // When a user press enter by using tab key
-            vm.openDialog2=function(e){
-                if(e.which===13||e.which===1){
-                    vm.openDialog(e);
-                }
-
             };
 
 

@@ -1,6 +1,16 @@
+<button class="md-icon-button md-button md-ink-ripple full-view-navigation md-button md-primoExplore-theme prevButton"  aria-label="Go to Previous record" ng-if="$ctrl.modalDialogFlag && $ctrl.index > 0"   ng-click="$ctrl.getPreviousRecord()" tabindex="0">
+    <md-icon md-svg-icon="primo-ui:chevron-up" aria-label="icon-previous" class="md-primoExplore-theme xbigIcon"></md-icon>
+</button>
+
 <md-button tabindex="0" hide-xs hide-sm class="md-icon-button close-button md-button md-primoExplore-theme md-ink-ripple  closeButton" aria-label="Close full display" ng-if="$ctrl.modalDialogFlag" (click)="$ctrl.closeDialog()">
     <md-icon md-svg-icon="primo-ui:close" aria-label="icon-close" class="md-primoExplore-theme xbigIcon"></md-icon>
 </md-button>
+
+<button class="md-icon-button md-button md-ink-ripple full-view-navigation md-button md-primoExplore-theme nextButton"  aria-label="Go to next record" ng-if="$ctrl.modalDialogFlag && $ctrl.index < ($ctrl.items.length - 1)" ng-click="$ctrl.getNextRecord()" tabindex="0">
+    <md-icon md-svg-icon="primo-ui:chevron-down" aria-label="icon-next" class="md-primoExplore-theme xbigIcon"></md-icon>
+</button>
+
+
 <div layout-align="start start" ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
     <div layout="row" layout-align="start start" class="resultTopDisplay">
         <label flex ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
@@ -11,7 +21,7 @@
      <ul class="hvInline">
      <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index"  aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
 
-         <thumbnail dataitem="item" searchdata="$ctrl.searchData"></thumbnail>
+         <thumbnail dataitem="item" searchdata="$ctrl.searchData" (keypress)="$ctrl.popup2($event, $index)" (click)="$ctrl.popup($event, $index)"></thumbnail>
 
      </li>
      </ul>
