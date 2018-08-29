@@ -496,7 +496,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         vm.searchData = items.searchData;
 
         vm.closeDialog = function () {
-            $mdDialog.hide(scope);
+            $mdDialog.hide();
         };
     }]);
 })();
@@ -3607,7 +3607,7 @@ angular.module('viewCustom').component('singleImage', {
             searchdata: '<'
         },
         controllerAs: 'vm',
-        controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', '$state', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location, $state) {
+        controller: ['$element', '$timeout', '$window', 'prmSearchService', '$location', function ($element, $timeout, $window, prmSearchService, $location) {
             var vm = this;
             var sv = prmSearchService;
             vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'showImageLabel': false };

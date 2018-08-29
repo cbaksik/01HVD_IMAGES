@@ -14,7 +14,7 @@
         vm.searchData = items.searchData;
 
         vm.closeDialog=function() {
-            $mdDialog.hide(scope);
+            $mdDialog.hide();
         };
 
     }]);
