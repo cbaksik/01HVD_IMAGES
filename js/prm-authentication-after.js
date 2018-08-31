@@ -34,9 +34,15 @@
                 vm.form.isLoggedIn=vm.auth.isLoggedIn;
                 // decode JWT Token to see if it is a valid token
                 let obj=vm.auth.authenticationService.userSessionManagerService.jwtUtilService.jwtHelper.decodeToken(vm.form.token);
-                vm.form.ip=obj.ip;
-
-                vm.validateIP();
+                if(vm.auth.isLoggedIn) {
+                    let status={'ip':'0.0.0.0','status':true};
+                    sv.setClientIp(status);
+                    sv.setLogInID(vm.auth.isLoggedIn);
+                    vm.form.status=true;
+                } else {
+                    vm.form.ip = obj.ip;
+                    vm.validateIP();
+                }
             }
         };
 

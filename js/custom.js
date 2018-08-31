@@ -2235,9 +2235,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 vm.form.isLoggedIn = vm.auth.isLoggedIn;
                 // decode JWT Token to see if it is a valid token
                 var obj = vm.auth.authenticationService.userSessionManagerService.jwtUtilService.jwtHelper.decodeToken(vm.form.token);
-                vm.form.ip = obj.ip;
-
-                vm.validateIP();
+                if (vm.auth.isLoggedIn) {
+                    var status = { 'ip': '0.0.0.0', 'status': true };
+                    sv.setClientIp(status);
+                    sv.setLogInID(vm.auth.isLoggedIn);
+                    vm.form.status = true;
+                } else {
+                    vm.form.ip = obj.ip;
+                    vm.validateIP();
+                }
             }
         };
 
