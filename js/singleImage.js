@@ -14,7 +14,7 @@ angular.module('viewCustom')
           jp2:'<'
         },
         controllerAs:'vm',
-        controller:['$element','$window','$location','prmSearchService','$timeout','$sce',function ($element,$window,$location,prmSearchService, $timeout,$sce) {
+        controller:['$element','$window','$location','prmSearchService','$timeout','$sce','$scope',function ($element,$window,$location,prmSearchService, $timeout,$sce,$scope) {
             var vm=this;
             var sv=prmSearchService;
             // set up local scope variables
@@ -26,7 +26,7 @@ angular.module('viewCustom')
             vm.clientIp=sv.getClientIp();
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
-            vm.$onChanges=function () {
+            vm.$onInit=function () {
                 vm.clientIp=sv.getClientIp();
                 vm.isLoggedIn=sv.getLogInID();
 
@@ -54,7 +54,6 @@ angular.module('viewCustom')
                     },500);
 
                 }
-
                 vm.localScope.loading=false;
             };
 
