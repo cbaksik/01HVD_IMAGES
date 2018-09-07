@@ -1810,12 +1810,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (vm.componentData.image) {
                         vm.photo = vm.componentData.image[0];
                         // find out if the image is jp2 or not
-                        vm.jp2 = sv.findJP2(vm.photo);
+                        //vm.jp2 = sv.findJP2(vm.photo);
                     }
                 }
             } else if (vm.xmldata.image) {
                 vm.photo = vm.xmldata.image[0];
-                vm.jp2 = sv.findJP2(vm.photo);
+                //vm.jp2=sv.findJP2(vm.photo);
                 vm.componentData = vm.xmldata.image[0];
             }
 
@@ -3508,7 +3508,7 @@ angular.module('viewCustom').component('singleImage', {
         vm.clientIp = sv.getClientIp();
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
-        vm.$onInit = function () {
+        vm.$onChanges = function () {
             vm.clientIp = sv.getClientIp();
             vm.isLoggedIn = sv.getLogInID();
 

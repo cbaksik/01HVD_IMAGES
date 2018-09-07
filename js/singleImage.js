@@ -26,7 +26,7 @@ angular.module('viewCustom')
             vm.clientIp=sv.getClientIp();
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
-            vm.$onInit=function () {
+            vm.$onChanges=function () {
                 vm.clientIp=sv.getClientIp();
                 vm.isLoggedIn=sv.getLogInID();
 
@@ -55,6 +55,7 @@ angular.module('viewCustom')
 
                 }
                 vm.localScope.loading=false;
+
             };
 
             vm.callback=function () {
