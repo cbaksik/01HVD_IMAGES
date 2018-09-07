@@ -1,4 +1,12 @@
-.prm-full-view-dialog {
-    color:#000000 !important;
-    z-index:1000 !important;
+#fullView #getit_link2 {
+    display: none;
 }
+
+#fullView #virtualBrowse {
+    display: none;
+}
+
+#fullView #tags {
+    display: none;
+}
+

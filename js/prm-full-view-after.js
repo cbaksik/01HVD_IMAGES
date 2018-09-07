@@ -6,7 +6,7 @@
 (function () {
 
     angular.module('viewCustom')
-    .controller('prmFullViewAfterController', [ '$sce','prmSearchService','$timeout','$location','$element', function ($sce, prmSearchService, $timeout, $location,$element) {
+    .controller('prmFullViewAfterController', ['prmSearchService','$location', function (prmSearchService, $location) {
 
         var sv=prmSearchService;
         var vm = this;
@@ -14,16 +14,6 @@
         vm.params=$location.search();
         vm.services=[];
 
-        vm.showFullViewPage=function () {
-            // remove virtual browse shelf and more link
-            for(var i=0; i < vm.parentCtrl.services.length; i++) {
-                if (vm.parentCtrl.services[i].serviceName === 'virtualBrowse') {
-                    vm.parentCtrl.services.splice(i);
-                } else if (vm.parentCtrl.services[i].scrollId === 'getit_link2') {
-                    vm.parentCtrl.services.splice(i);
-                }
-            }
-        };
 
         vm.showSingImagePage=function () {
             // remove virtual browse shelf and more link
@@ -81,13 +71,7 @@
         };
 
         vm.$onInit=function() {
-
             vm.params=$location.search();
-
-            // remove other images section, otherwise it would show 2 times
-            setTimeout(()=>{
-                vm.showFullViewPage();
-            },1000);
 
         }
 

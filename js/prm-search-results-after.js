@@ -235,9 +235,8 @@
 
         // go to full display state
         vm.goto=function() {
-            var obj={docid:vm.itemData.item.pnx.control.recordid[0],vid:'01HVD_IMAGES',lang:'en_US',search_scope:vm.searchData.scope,tab:vm.searchData.tab,q:vm.searchData.q,searchString:vm.searchData.searchString,sortby:vm.searchData.sortby,offset:vm.searchData.offset};
+            let obj={docid:vm.itemData.item.pnx.control.recordid[0],vid:'01HVD_IMAGES',lang:'en_US',search_scope:vm.searchData.scope,tab:vm.searchData.tab, q:vm.searchData['q'],searchString:vm.searchData['searchString'],sortby:vm.searchData.sort,offset:vm.searchData.offset};
             $state.go('fulldisplay',obj,{location:false, reload:true,notify:false});
-
         };
 
         // open modal dialog when click on thumbnail image

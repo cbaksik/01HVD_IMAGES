@@ -1081,51 +1081,43 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 (function () {
 
-    angular.module('viewCustom').controller('customPrintPageCtrl', ['$element', '$stateParams', 'customService', '$timeout', '$window', function ($element, $stateParams, customService, $timeout, $window) {
+    angular.module('viewCustom').controller('customPrintPageCtrl', ['$element', '$stateParams', 'customService', '$timeout', '$window', '$state', function ($element, $stateParams, customService, $timeout, $window, $state) {
         var vm = this;
         vm.item = {};
         var cs = customService;
         // get item data to display on full view page
         vm.getItem = function () {
             var url = vm.parentCtrl.searchService.cheetah.restBaseURLs.pnxBaseURL + '/' + vm.context + '/' + vm.docid;
-            url += '?vid=' + vm.vid;
+            url += '?vid=01HVD_IMAGES';
             cs.getAjax(url, '', 'get').then(function (result) {
                 vm.item = result.data;
+                vm.goto();
             }, function (error) {
                 console.log(error);
             });
+        };
+
+        vm.goto = function () {
+            var obj = { docid: vm.item.pnx.control.recordid[0], vid: 'HVD2', lang: 'en_US' };
+            $state.go('fulldisplay', obj, { location: false, reload: true, notify: true });
         };
 
         vm.$onInit = function () {
             // capture the parameter from UI-Router
             vm.docid = $stateParams.docid;
             vm.context = $stateParams.context;
-            vm.vid = $stateParams.vid;
+            vm.vid = '01HVD_IMAGES';
             vm.getItem();
             $timeout(function () {
-                // remove top menu and search bar
-                var el = $element[0].parentNode.parentNode;
+                var el = document.getElementsByTagName('body')[0];
                 if (el) {
-                    el.children[0].remove();
+                    el.setAttribute('id', 'printView');
                 }
+            }, 50);
 
-                var topMenu = document.getElementById('customTopMenu');
-                if (topMenu) {
-                    topMenu.remove();
-                }
-
-                // remove action list
-                var actionList = document.getElementById('action_list');
-                if (actionList) {
-                    actionList.remove();
-                }
-
-                // remove right column of the page
-                var el2 = $element[0].children[1].children[0].children[1];
-                if (el2) {
-                    el2.remove();
-                }
-            }, 1000);
+            $window.onafterprint = function () {
+                $window.close();
+            };
         };
 
         vm.$postLink = function () {
@@ -1155,7 +1147,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         vm.print = function () {
             var url = '/primo-explore/printPage/' + vm.parentCtrl.context + '/' + vm.parentCtrl.pnx.control.recordid;
-            url += '?vid=' + params.vid;
+            url += '?vid=01HVD_IMAGES';
             $window.open(url, '_blank');
         };
     }]);
@@ -2440,24 +2432,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 (function () {
 
-    angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'prmSearchService', '$timeout', '$location', '$element', function ($sce, prmSearchService, $timeout, $location, $element) {
+    angular.module('viewCustom').controller('prmFullViewAfterController', ['prmSearchService', '$location', function (prmSearchService, $location) {
 
         var sv = prmSearchService;
         var vm = this;
         vm.item = vm.parentCtrl.item;
         vm.params = $location.search();
         vm.services = [];
-
-        vm.showFullViewPage = function () {
-            // remove virtual browse shelf and more link
-            for (var i = 0; i < vm.parentCtrl.services.length; i++) {
-                if (vm.parentCtrl.services[i].serviceName === 'virtualBrowse') {
-                    vm.parentCtrl.services.splice(i);
-                } else if (vm.parentCtrl.services[i].scrollId === 'getit_link2') {
-                    vm.parentCtrl.services.splice(i);
-                }
-            }
-        };
 
         vm.showSingImagePage = function () {
             // remove virtual browse shelf and more link
@@ -2510,13 +2491,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         vm.$onInit = function () {
-
             vm.params = $location.search();
-
-            // remove other images section, otherwise it would show 2 times
-            setTimeout(function () {
-                vm.showFullViewPage();
-            }, 1000);
         };
     }]);
 
@@ -2922,7 +2897,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         // go to full display state
         vm.goto = function () {
-            var obj = { docid: vm.itemData.item.pnx.control.recordid[0], vid: '01HVD_IMAGES', lang: 'en_US', search_scope: vm.searchData.scope, tab: vm.searchData.tab, q: vm.searchData.q, searchString: vm.searchData.searchString, sortby: vm.searchData.sortby, offset: vm.searchData.offset };
+            var obj = { docid: vm.itemData.item.pnx.control.recordid[0], vid: '01HVD_IMAGES', lang: 'en_US', search_scope: vm.searchData.scope, tab: vm.searchData.tab, q: vm.searchData['q'], searchString: vm.searchData['searchString'], sortby: vm.searchData.sort, offset: vm.searchData.offset };
             $state.go('fulldisplay', obj, { location: false, reload: true, notify: false });
         };
 
@@ -3540,29 +3515,25 @@ angular.module('viewCustom').component('singleImage', {
             if (vm.restricted && !vm.isLoggedIn && !vm.clientIp.status) {
                 vm.showImage = false;
             }
+
             vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
             if (vm.src && vm.showImage) {
-                if (vm.jp2 === true) {
-                    var url = sv.getHttps(vm.src) + '?buttons=Y';
-                    //var url = sv.getHttps(vm.src);
-                    vm.imageUrl = $sce.trustAsResourceUrl(url);
-                } else {
-                    vm.imageUrl = vm.src;
-                    $timeout(function () {
-                        var img = $element.find('img')[0];
-                        // use default image if it is a broken link image
-                        var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                        if (pattern.test(vm.src)) {
-                            img.src = '/primo-explore/custom/01HVD_IMAGES/img/icon_image.png';
-                        }
-                        img.onload = vm.callback;
-                        if (img.width > 600) {
-                            vm.callback();
-                        }
-                    }, 300);
-                }
-            } else {
+                var url = sv.getHttps(vm.src) + '?buttons=Y';
+                vm.imageUrl = $sce.trustAsResourceUrl(url);
+            } else if (vm.showImage) {
                 vm.imageUrl = '';
+                $timeout(function () {
+                    var img = $element.find('img')[0];
+                    // use default image if it is a broken link image
+                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                    if (pattern.test(vm.src)) {
+                        img.src = '/primo-explore/custom/01HVD_IMAGES/img/icon_image.png';
+                    }
+                    img.onload = vm.callback;
+                    if (img.width > 600) {
+                        vm.callback();
+                    }
+                }, 500);
             }
 
             vm.localScope.loading = false;

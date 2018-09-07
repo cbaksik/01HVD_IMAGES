@@ -7,17 +7,18 @@
 (function () {
 
     angular.module('viewCustom')
-    .controller('customPrintPageCtrl',['$element','$stateParams','customService','$timeout','$window',function ($element,$stateParams,customService,$timeout,$window) {
+    .controller('customPrintPageCtrl',['$element','$stateParams','customService','$timeout','$window','$state',function ($element,$stateParams,customService,$timeout,$window, $state) {
         var vm=this;
         vm.item={};
         var cs=customService;
         // get item data to display on full view page
         vm.getItem=function () {
           var url=vm.parentCtrl.searchService.cheetah.restBaseURLs.pnxBaseURL+'/'+vm.context+'/'+vm.docid;
-          url+='?vid='+vm.vid;
+          url+='?vid=01HVD_IMAGES';
           cs.getAjax(url,'','get').then(
               function (result) {
               vm.item=result.data;
+              vm.goto();
             },
             function (error) {
                 console.log(error);
@@ -26,46 +27,36 @@
 
         };
 
+        vm.goto=function() {
+            var obj={docid:vm.item.pnx.control.recordid[0],vid:'HVD2',lang:'en_US'};
+            $state.go('fulldisplay',obj,{location:false, reload:true,notify:true});
+
+        };
+
 
         vm.$onInit=function () {
             // capture the parameter from UI-Router
             vm.docid=$stateParams.docid;
             vm.context=$stateParams.context;
-            vm.vid=$stateParams.vid;
+            vm.vid='01HVD_IMAGES';
             vm.getItem();
             $timeout(function () {
-                // remove top menu and search bar
-                var el=$element[0].parentNode.parentNode;
+                var el=document.getElementsByTagName('body')[0];
                 if(el) {
-                    el.children[0].remove();
+                    el.setAttribute('id','printView');
                 }
+            },50);
 
-                var topMenu=document.getElementById('customTopMenu');
-                if(topMenu) {
-                    topMenu.remove();
-                }
-
-                // remove action list
-                var actionList=document.getElementById('action_list');
-                if(actionList) {
-                    actionList.remove();
-                }
-
-                // remove right column of the page
-                var el2=$element[0].children[1].children[0].children[1];
-                if(el2) {
-                    el2.remove();
-                }
-
-            },1000)
+            $window.onafterprint=()=>{
+                $window.close();
+            }
         };
 
         vm.$postLink=function () {
             $timeout(function () {
                 $window.print();
             },3000)
-        }
-
+        };
 
     }]);
 

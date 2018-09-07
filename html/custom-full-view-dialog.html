@@ -1,16 +1,20 @@
-<div layout="row" class="layout-row" tabindex="-1">
-    <md-dialog aria-label="Full Display" class="md-dialog-full prm-full-view-dialog  _md md-primoExplore-theme md-dialog-fullscreen _md-transition-out" role="dialog" tabindex="-1">
-        <md-button hide-gt-sm class="md-fab close-button md-button md-primoExplore-theme md-ink-ripple closeButton2"  ng-click="vm.closeDialog()" tabIndex="0" aria-label="Close button">
-            <md-icon md-svg-icon="primo-ui:close" aria-label="icon-close" class="md-primoExplore-theme xbigIcon2"></md-icon>
-        </md-button>
-        <md-dialog-content layout="row" class="layout-row" id="dialogContent_450">
-            <sticky-scroll flex="100" class="flex-100" style="overflow-y: scroll">
 
-                <prm-full-view id="fullView" ng-if="vm.item" [(item)]="vm.item" flex class="flex" tabindex="-1">
+<div class="md-dialog-container fixed-container">
+<md-dialog id="fullView" aria-label="Full Display" class="md-dialog-full prm-full-view-dialog  _md md-primoExplore-theme md-dialog-fullscreen _md-transition-in" role="dialog" tabindex="-1">
+    <md-button id="closebtn" hide-gt-sm class="md-fab close-button md-button md-primoExplore-theme md-ink-ripple closeButton2"  ng-click="vm.closeDialog()" tabIndex="0" aria-label="Close button">
+        <md-icon md-svg-icon="primo-ui:close" aria-label="icon-close" class="md-primoExplore-theme xbigIcon2"></md-icon>
+    </md-button>
+    <md-dialog-content layout="row" class="layout-row" id="dialogContent_104">
+        <sticky-scroll flex="100" class="flex-100">
+        <prm-full-view flex="100"
+                       [is-overlay-full-view]="false"
+                       [isfavorites]="false"
+                       [item]="vm.item"
+                       id="fullView" tabindex="-1"
+                       role="contentinfo">
 
-                </prm-full-view>
-
-            </sticky-scroll>
-        </md-dialog-content>
-    </md-dialog>
+        </prm-full-view>
+        </sticky-scroll>
+    </md-dialog-content>
+</md-dialog>
 </div>

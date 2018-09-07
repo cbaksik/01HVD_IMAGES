@@ -12,7 +12,7 @@
 
         vm.print=function () {
             var url='/primo-explore/printPage/'+vm.parentCtrl.context+'/'+vm.parentCtrl.pnx.control.recordid;
-            url+='?vid='+params.vid;
+            url+='?vid=01HVD_IMAGES';
             $window.open(url,'_blank');
         }
 
