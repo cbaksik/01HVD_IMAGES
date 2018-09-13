@@ -1475,6 +1475,9 @@ img.md-card-image {
 }
 
 
+prm-permalink > div:first-child > md-content > div:last-child {
+    text-align: center;
+}
 prm-search-result-availability-line {
     display: none;
 }
