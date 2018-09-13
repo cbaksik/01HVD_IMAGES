@@ -1346,14 +1346,6 @@ prm-brief-result-container.list-item:hover {
     margin-bottom:30px;
 }
 
-.iframeClass {
-    width:800px;
-    height:650px;
-    border: none;
-    margin:0;
-    padding:0;
-    overflow: hidden;
-}
 
 .imageNav {
     margin-top: 20px;
@@ -1789,6 +1781,26 @@ div.search-actions > .md-button.button-confirm:hover {
 
 }
 
+.iframeClass {
+    width:700px;
+    height:650px;
+    border: none;
+    margin:0;
+    padding:0;
+    overflow: hidden;
+
+}
+
+@media only print {
+    .iframeClass {
+        width:600px;
+        height:500px;
+        margin:0px;
+        padding:0px;
+        border:none;
+        overflow: hidden;
+    }
+}
 .imageLabel {
     width:185px;
     height:30px;
